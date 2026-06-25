@@ -166,6 +166,9 @@ class RalphBase(nn.Module):
             self.lm_head = None
         else:
             self.lm_head = nn.Linear(cfg.dim, cfg.vocab_size, bias=False)
+        self.logit_bias = (
+            nn.Parameter(torch.zeros(cfg.vocab_size)) if cfg.use_logit_bias else None
+        )
         self.register_buffer(
             "rope_cache",
             precompute_rope_cache(cfg.head_dim, cfg.max_seq_len, cfg.rope_base, torch.device("cpu")),
