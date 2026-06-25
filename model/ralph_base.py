@@ -36,6 +36,7 @@ class RalphConfig:
     rms_norm_eps: float = 1e-5
     init_std: float = 0.02
     tie_embeddings: bool = True
+    use_logit_bias: bool = True
 
 
 def _rms_norm(x: torch.Tensor, weight: torch.Tensor, eps: float) -> torch.Tensor:
@@ -201,6 +202,8 @@ class RalphBase(nn.Module):
             logits = F.linear(x, self.tok_embed.weight)
         else:
             logits = self.lm_head(x)
+        if self.logit_bias is not None:
+            logits = logits + self.logit_bias
         loss = None
         if targets is not None:
             loss = F.cross_entropy(
